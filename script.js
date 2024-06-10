@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
 import {skyboxesList} from './const/skyboxes.js';
 
 const scene = new THREE.Scene();
@@ -21,6 +22,11 @@ const loader = new THREE.CubeTextureLoader();
 
 const texture = loader.load(skyboxesList.sh);
 scene.background = texture;
+
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 20, 0);
+controls.update();
 
 function animate() {
 
