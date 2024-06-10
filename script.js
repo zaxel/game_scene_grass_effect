@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+import {skyboxesList} from './const/skyboxes.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -14,6 +15,12 @@ const cube = new THREE.Mesh( geometry, material );
 scene.add( cube );
 
 camera.position.z = 5;
+
+
+const loader = new THREE.CubeTextureLoader();
+
+const texture = loader.load(skyboxesList.sh);
+scene.background = texture;
 
 function animate() {
 
