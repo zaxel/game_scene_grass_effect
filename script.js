@@ -33,7 +33,7 @@ controls.target.set(0, 20, 0);
 controls.update();
 
 
-let dirLight = new THREE.DirectionalLight(0xFFFFFF, 0.3);
+let dirLight = new THREE.DirectionalLight(0xFFFFFF, 0.6);
 dirLight.position.set(20, 100, 10);
 dirLight.target.position.set(0, 0, 0);
 dirLight.castShadow = true;
@@ -50,6 +50,17 @@ dirLight.shadow.camera.top = 100;
 dirLight.shadow.camera.bottom = -100;
 
 let amLight = new THREE.AmbientLight(0x101010);
+
+const plane = new THREE.Mesh(
+	new THREE.PlaneGeometry(100, 100, 10, 10),
+	new THREE.MeshStandardMaterial({
+			color: 0xFFFFFF,
+		}));
+	plane.castShadow = false;
+	plane.receiveShadow = true;
+	plane.rotation.x = -Math.PI / 2;
+
+scene.add(plane);
 
 scene.add(dirLight);
 scene.add(amLight);
