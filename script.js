@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import {skyboxesList} from './const/skyboxes.js';
 
 const scene = new THREE.Scene();
@@ -60,6 +61,22 @@ scene.add(plane);
 
 scene.add(dirLight);
 scene.add(amLight);
+
+function loadAnimatedModel(){
+	const mainHeroLoader = new FBXLoader();
+
+	mainHeroLoader.load( 
+		'./assets/models/characters/Big_Vegas.fbx', 
+		function(fbx){
+			scene.add( fbx);
+		}, 
+		undefined, 
+		function(error){
+			console.error( error );
+		} 
+	);
+}
+loadAnimatedModel()
 
 function animate() {
 	renderer.render( scene, camera );
