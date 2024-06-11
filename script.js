@@ -62,16 +62,30 @@ scene.add(plane);
 scene.add(dirLight);
 scene.add(amLight);
 
+
+let mixer;
+
 function loadAnimatedModel(){
 	const mainHeroLoader = new FBXLoader();
 
 	mainHeroLoader.load( 
-		'./assets/models/characters/Big_Vegas.fbx', 
+		'./assets/models/characters/The_Boss.fbx', 
 		function(fbx){
 			fbx.scale.setScalar(0.1);
 			fbx.traverse(c => {
 				c.castShadow = true;
 			})
+
+			const modAnimation = new FBXLoader();
+			modAnimation.load(
+					'./assets/models/animations/Twist_Dance.fbx', 
+					anim => {
+						mixer = new THREE.AnimationMixer(fbx);
+						const idle = mixer.clipAction(anim.animations[0]);
+						idle.play();
+					}
+				)
+
 			scene.add( fbx);
 		}, 
 		undefined, 
@@ -83,5 +97,9 @@ function loadAnimatedModel(){
 loadAnimatedModel()
 
 function animate() {
+	const delta = clock.getDelta();  
+    if (mixer) mixer.update(delta);  
 	renderer.render( scene, camera );
 }
+
+const clock = new THREE.Clock();
