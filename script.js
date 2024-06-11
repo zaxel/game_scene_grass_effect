@@ -69,7 +69,7 @@ function loadAnimatedModel(){
 	const mainHeroLoader = new FBXLoader();
 
 	mainHeroLoader.load( 
-		'./assets/models/characters/The_Boss.fbx', 
+		'./models/characters/The_Boss.fbx', 
 		function(fbx){
 			fbx.scale.setScalar(0.1);
 			fbx.traverse(c => {
@@ -78,7 +78,7 @@ function loadAnimatedModel(){
 
 			const modAnimation = new FBXLoader();
 			modAnimation.load(
-					'./assets/models/animations/Twist_Dance.fbx', 
+					'./models/animations/Twist_Dance.fbx', 
 					anim => {
 						mixer = new THREE.AnimationMixer(fbx);
 						const idle = mixer.clipAction(anim.animations[0]);
