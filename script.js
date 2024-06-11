@@ -68,6 +68,10 @@ function loadAnimatedModel(){
 	mainHeroLoader.load( 
 		'./assets/models/characters/Big_Vegas.fbx', 
 		function(fbx){
+			fbx.scale.setScalar(0.1);
+			fbx.traverse(c => {
+				c.castShadow = true;
+			})
 			scene.add( fbx);
 		}, 
 		undefined, 
