@@ -25,7 +25,7 @@ class BasicCharacterController {
   
 	_LoadModels() {
 	  const loader = new FBXLoader();
-	  loader.load('./models/characters/The_Boss.fbx', (fbx) => {
+	  loader.load('./models/characters/Big_Vegas.fbx', (fbx) => {
 		fbx.scale.setScalar(0.1);
 		fbx.traverse(c => {
 		  c.castShadow = true;
@@ -66,7 +66,7 @@ class InitializeAnimationDemo{
 	}
 	_initialize(){
 		this._scene = new THREE.Scene();
-		this._camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+		this._camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
 		
 		this._renderer = new THREE.WebGLRenderer({
 			antialias: true,
@@ -92,38 +92,38 @@ class InitializeAnimationDemo{
 		controls.update();
 		
 		
-		let dirLight = new THREE.DirectionalLight(0xFFFFFF, 0.6);
-		dirLight.position.set(20, 100, 10);
-		dirLight.target.position.set(0, 0, 0);
-		dirLight.castShadow = true;
-		dirLight.shadow.bias = -0.001;
-		dirLight.shadow.mapSize.width = 2048;
-		dirLight.shadow.mapSize.height = 2048;
-		dirLight.shadow.camera.near = 0.1;
-		dirLight.shadow.camera.far = 500.0;
-		dirLight.shadow.camera.near = 0.5;
-		dirLight.shadow.camera.far = 500.0;
-		dirLight.shadow.camera.left = 100;
-		dirLight.shadow.camera.right = -100;
-		dirLight.shadow.camera.top = 100;
-		dirLight.shadow.camera.bottom = -100;
+		let dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+		dirLight.position.set(-100, 100, 100);
+    	dirLight.target.position.set(0, 0, 0);
+    	dirLight.castShadow = true;
+    	dirLight.shadow.bias = -0.001;
+    	dirLight.shadow.mapSize.width = 4096;
+    	dirLight.shadow.mapSize.height = 4096;
+    	dirLight.shadow.camera.near = 0.1;
+    	dirLight.shadow.camera.far = 500.0;
+    	dirLight.shadow.camera.near = 0.5;
+    	dirLight.shadow.camera.far = 500.0;
+    	dirLight.shadow.camera.left = 50;
+    	dirLight.shadow.camera.right = -50;
+    	dirLight.shadow.camera.top = 50;
+    	dirLight.shadow.camera.bottom = -50;
+	
 		
-		let amLight = new THREE.AmbientLight(0x101010);
+		let amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
 		
 		const plane = new THREE.Mesh(
 			new THREE.PlaneGeometry(100, 100, 10, 10),
 			new THREE.MeshStandardMaterial({
-					color: 0xFFFFFF,
+					color: 0xCCCCCC,
 		}));
 
 		plane.castShadow = false;
 		plane.receiveShadow = true;
 		plane.rotation.x = -Math.PI / 2;
-	
-		this._scene.add(plane);
-	
+		
 		this._scene.add(dirLight);
 		this._scene.add(amLight);
+		this._scene.add(plane);
 	}
 	_loadAnimatedModel() {
 		const params = {
@@ -134,7 +134,7 @@ class InitializeAnimationDemo{
 	  }
 	_animate(){
 		if (this._controls._mixer) {
-				this._controls._mixer.update(0.01);
+				this._controls._mixer.update(0.02);
 			}
 		this._renderer.render( this._scene, this._camera );
 	}
