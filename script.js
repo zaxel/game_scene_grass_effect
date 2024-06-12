@@ -5,6 +5,79 @@ import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import {skyboxesList} from './const/skyboxes.js';
 
 
+class BasicButtonPressedController {
+	constructor() {
+	  this._init();    
+	}
+  
+	_init() {
+	  this._keys = {
+		forward: false,
+		backward: false,
+		left: false,
+		right: false,
+		space: false,
+		shift: false,
+	  };
+	  document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
+	  document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
+	}
+  
+	_onKeyDown(event) {
+	  switch (event.keyCode) {
+		case 87: // w
+		case 38: // arrow up
+		  this._keys.forward = true;
+		  break;
+		case 65: // a
+		case 37: // arrow left
+		  this._keys.left = true;
+		  break;
+		case 83: // s
+		case 40: // arrow down
+		  this._keys.backward = true;
+		  break;
+		case 68: // d
+		case 39: // arrow right
+		  this._keys.right = true;
+		  break;
+		case 32: // SPACE
+		  this._keys.space = true;
+		  break;
+		case 16: // SHIFT
+		  this._keys.shift = true;
+		  break;
+	  }
+	}
+  
+	_onKeyUp(event) {
+	  switch(event.keyCode) {
+		case 87: // w
+		case 38: // arrow up
+		  this._keys.forward = false;
+		  break;
+		case 65: // a
+		case 37: // arrow left
+		  this._keys.left = false;
+		  break;
+		case 83: // s
+		case 40: // arrow down
+		  this._keys.backward = false;
+		  break;
+		case 68: // d
+		case 39: // arrow right
+		  this._keys.right = false;
+		  break;
+		case 32: // SPACE
+		  this._keys.space = false;
+		  break;
+		case 16: // SHIFT
+		  this._keys.shift = false;
+		  break;
+	  }
+	}
+  };
+
 class BasicCharacterController {
 	constructor(params) {
 	  this._initCharControl(params);
@@ -17,13 +90,13 @@ class BasicCharacterController {
 	  this._velocity = new THREE.Vector3(0, 0, 0);
   
 	  this._animations = {};
-	//   this._input = new BasicCharacterControllerInput();
+	  this._input = new BasicButtonPressedController();
 	//   this._stateMachine = new CharacterFSM(new BasicCharacterControllerProxy(this._animations));
   
-	  this._LoadModels();
+	  this._loadModels();
 	}
   
-	_LoadModels() {
+	_loadModels() {
 	  const loader = new FBXLoader();
 	  loader.load('./models/characters/Big_Vegas.fbx', (fbx) => {
 		fbx.scale.setScalar(0.1);
