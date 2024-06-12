@@ -5,10 +5,64 @@ import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import {skyboxesList} from './const/skyboxes.js';
 
 
+class BasicCharacterController {
+	constructor(params) {
+	  this._initCharControl(params);
+	}
+  
+	_initCharControl(params) {
+	  this._params = params;
+	  this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
+	  this._acceleration = new THREE.Vector3(1, 0.25, 50.0);
+	  this._velocity = new THREE.Vector3(0, 0, 0);
+  
+	  this._animations = {};
+	//   this._input = new BasicCharacterControllerInput();
+	//   this._stateMachine = new CharacterFSM(new BasicCharacterControllerProxy(this._animations));
+  
+	  this._LoadModels();
+	}
+  
+	_LoadModels() {
+	  const loader = new FBXLoader();
+	  loader.load('./models/characters/The_Boss.fbx', (fbx) => {
+		fbx.scale.setScalar(0.1);
+		fbx.traverse(c => {
+		  c.castShadow = true;
+		});
+  
+		this._target = fbx;
+		this._params.scene.add(this._target);
+  
+		this._mixer = new THREE.AnimationMixer(this._target);
+  
+		this._manager = new THREE.LoadingManager();
+		this._manager.onLoad = () => {
+		  this._state = 'idle';
+		};
+  
+		
+		const loader = new FBXLoader(this._manager);
+		loader.load(
+			'./models/animations/Idle.fbx',
+			anim => {
+				const clip = anim.animations[0];
+				const action = this._mixer.clipAction(clip);
+				action.play()
+		});
+	  });
+	}
+ 
+  };
+  
+  
+
+
 
 class InitializeAnimationDemo{
 	constructor(){
 		this._initialize();
+		this._loadAnimatedModel();
 	}
 	_initialize(){
 		this._scene = new THREE.Scene();
@@ -71,7 +125,17 @@ class InitializeAnimationDemo{
 		this._scene.add(dirLight);
 		this._scene.add(amLight);
 	}
+	_loadAnimatedModel() {
+		const params = {
+		  camera: this._camera,
+		  scene: this._scene,
+		}
+		this._controls = new BasicCharacterController(params);
+	  }
 	_animate(){
+		if (this._controls._mixer) {
+				this._controls._mixer.update(0.01);
+			}
 		this._renderer.render( this._scene, this._camera );
 	}
 }
