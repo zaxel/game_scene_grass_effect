@@ -117,15 +117,19 @@ class BasicCharacterController {
 		
 		const loader = new FBXLoader(this._manager);
 		loader.load(
-			'./models/animations/Idle.fbx',
+			'./models/animations/Twist_Dance.fbx',
 			anim => {
 				const clip = anim.animations[0];
 				const action = this._mixer.clipAction(clip);
-				action.play()
+				action.play();
 		});
 	  });
 	}
- 
+	_update(timeInSeconds){
+		if(this._mixer){
+		  		this._mixer.update(timeInSeconds);
+			}
+		}
   };
   
   
@@ -134,8 +138,12 @@ class BasicCharacterController {
 
 class InitializeAnimationDemo{
 	constructor(){
-		this._initialize();
-		this._loadAnimatedModel();
+		this._mixers = [];
+    	this._previousFrame = null;
+
+    	this._initialize();
+    	this._loadAnimatedModel();
+    	this._animate();
 	}
 	_initialize(){
 		this._scene = new THREE.Scene();
@@ -147,7 +155,6 @@ class InitializeAnimationDemo{
 		this._renderer.shadowMap.enabled = true;
 		this._renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 		this._renderer.setSize( window.innerWidth, window.innerHeight );
-		this._renderer.setAnimationLoop( () => this._animate() );
 		document.body.appendChild( this._renderer.domElement );
 		
 		this._camera.position.set(75, 20, 0);
@@ -205,12 +212,33 @@ class InitializeAnimationDemo{
 		}
 		this._controls = new BasicCharacterController(params);
 	  }
-	_animate(){
-		if (this._controls._mixer) {
-				this._controls._mixer.update(0.02);
-			}
-		this._renderer.render( this._scene, this._camera );
-	}
+	
+	_animate() {
+		requestAnimationFrame((t) => {
+		  if (this._previousFrame === null) {
+			this._previousFrame = t;
+		  }
+	
+		  this._animate();
+	
+		  this._renderer.render(this._scene, this._camera);
+		  this._step(t - this._previousFrame);
+		  this._previousFrame = t;
+		});
+	  }
+	
+	  _step(timeElapsed) {
+		const timeElapsedS = timeElapsed * 0.001;
+		if (this._mixers) {
+		//   this._mixers.map(m => m.update(timeElapsedS));
+		}
+	
+		if (this._controls) {
+		  this._controls._update(timeElapsedS);
+		}
+	  }
+	
+	
 }
 
 
