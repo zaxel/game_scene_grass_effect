@@ -14,6 +14,54 @@ class State {
 	update() {}
   };
 
+class RunState extends State {
+	constructor(parent) {
+	  super(parent);
+	}
+  
+	get Name() {
+	  return 'run';
+	}
+  
+	enter(prevState) {
+	  const curAction = this._parent._proxy._animations['run'].action;
+	  if (prevState) {
+		const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+		curAction.enabled = true;
+  
+		if (prevState.Name == 'walk') {
+		  const ratio = curAction.getClip().duration / prevAction.getClip().duration;
+		  curAction.time = prevAction.time * ratio;
+		} else {
+		  curAction.time = 0.0;
+		  curAction.setEffectiveTimeScale(1.0);
+		  curAction.setEffectiveWeight(1.0);
+		}
+  
+		curAction.crossFadeFrom(prevAction, 0.5, true);
+		curAction.play();
+	  } else {
+		curAction.play();
+	  }
+	}
+  
+	exit() {
+	}
+  
+	update(timeElapsed, input) {
+	  if (input._keys.forward || input._keys.backward) {
+		if (!input._keys.shift) {
+		  this._parent.setState('walk');
+		}
+		return;
+	  }
+  
+	  this._parent.setState('idle');
+	}
+  };
+  
+
   class WalkState extends State {
 	constructor(parent) {
 	  super(parent);
@@ -191,7 +239,7 @@ class FiniteStateMachine {
 	_initStates() {
 	  this._addState('idle', IdleState);
 	  this._addState('walk', WalkState);
-	//   this._addState('run', RunState);
+	  this._addState('run', RunState);
 	  this._addState('dance', DanceState);
 	}
   };
@@ -471,7 +519,7 @@ class InitializeAnimationDemo{
 		let amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
 		
 		const plane = new THREE.Mesh(
-			new THREE.PlaneGeometry(100, 100, 10, 10),
+			new THREE.PlaneGeometry(500, 500, 10, 10),
 			new THREE.MeshStandardMaterial({
 					color: 0xCCCCCC,
 		}));
