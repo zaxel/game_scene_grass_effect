@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import {skyboxesList} from './const/skyboxes.js';
 
@@ -13,6 +12,53 @@ class State {
 	enter() {}
 	exit() {}
 	update() {}
+  };
+
+  class WalkState extends State {
+	constructor(parent) {
+	  super(parent);
+	}
+  
+	get Name() {
+	  return 'walk';
+	}
+  
+	enter(prevState) {
+	  const curAction = this._parent._proxy._animations['walk'].action;
+	  if (prevState) {
+		const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+		curAction.enabled = true;
+  
+		if (prevState.Name == 'run') {
+		  const ratio = curAction.getClip().duration / prevAction.getClip().duration;
+		  curAction.time = prevAction.time * ratio;
+		} else {
+		  curAction.time = 0.0;
+		  curAction.setEffectiveTimeScale(1.0);
+		  curAction.setEffectiveWeight(1.0);
+		}
+  
+		curAction.crossFadeFrom(prevAction, 0.5, true);
+		curAction.play();
+	  } else {
+		curAction.play();
+	  }
+	}
+  
+	exit() {
+	}
+  
+	update(_, input) {
+	  if (input._keys.forward || input._keys.backward) {
+		if (input._keys.shift) {
+		  this._parent.setState('run');
+		}
+		return;
+	  }
+  
+	  this._parent.setState('idle');
+	}
   };
 
 class DanceState extends State {
@@ -144,7 +190,7 @@ class FiniteStateMachine {
   
 	_initStates() {
 	  this._addState('idle', IdleState);
-	//   this._addState('walk', WalkState);
+	  this._addState('walk', WalkState);
 	//   this._addState('run', RunState);
 	  this._addState('dance', DanceState);
 	}
