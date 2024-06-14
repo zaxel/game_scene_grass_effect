@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import {skyboxesList} from './const/skyboxes.js';
 
+const characterActions = ['dance', 'dance2', 'arguing'];
+
 
 class State {
 	constructor(parent) {
@@ -220,11 +222,22 @@ class RunBWDState extends State {
 		}
 	  
   };
+  class ActionRandomizer{
+	constructor(){
+		this._index;
+	}
+	getRandomIndex(actions){
+		if(!actions.length)
+			return;
+		this._index = Math.floor(Math.random()*actions.length);
+		return this._index;  
+	}
+  }
 
-class DanceState extends State {
+class ActionState extends State {
 	constructor(parent) {
 	  super(parent);
-  
+	  this._actionIndexRandomizer = new ActionRandomizer().getRandomIndex;
 	  this._finishedCallback = () => {
 		this._finished();
 	  }
@@ -241,7 +254,7 @@ class DanceState extends State {
   
 	  if (prevState) {
 		const prevAction = this._parent._proxy._animations[prevState.Name].action;
-  
+
 		curAction.reset();  
 		curAction.setLoop(THREE.LoopOnce, 1);
 		curAction.clampWhenFinished = true;
@@ -356,7 +369,7 @@ class FiniteStateMachine {
 	  this._addState('walk_bwd', WalkBWDState);
 	  this._addState('run_fwd', RunFWDState);
 	  this._addState('run_bwd', RunBWDState);
-	  this._addState('dance', DanceState);
+	  this._addState('dance', ActionState);
 	}
   };
 
