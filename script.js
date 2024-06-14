@@ -303,7 +303,7 @@ class DanceState extends State {
 		this._parent.setState('walk_fwd');
 	  } else if (input._keys.backward) {
 		this._parent.setState('walk_bwd');
-	  } else if (input._keys.space) {
+	  } else if (input._keys.action) {
 		this._parent.setState('dance');
 	  }
 	}
@@ -383,6 +383,7 @@ class BasicButtonPressedController {
 		right: false,
 		space: false,
 		shift: false,
+		action: false
 	  };
 	  document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
 	  document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -408,6 +409,9 @@ class BasicButtonPressedController {
 		  break;
 		case 32: // SPACE
 		  this._keys.space = true;
+		  break;
+		case 82: // r
+		  this._keys.action = true;
 		  break;
 		case 16: // SHIFT
 		  this._keys.shift = true;
@@ -435,6 +439,9 @@ class BasicButtonPressedController {
 		  break;
 		case 32: // SPACE
 		  this._keys.space = false;
+		  break;
+		case 82: // r
+		  this._keys.action = false;
 		  break;
 		case 16: // SHIFT
 		  this._keys.shift = false;
