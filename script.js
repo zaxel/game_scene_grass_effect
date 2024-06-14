@@ -583,7 +583,6 @@ class BasicCharacterController {
 
 class InitializeAnimationDemo{
 	constructor(){
-		this._mixers = [];
     	this._previousFrame = null;
 
     	this._initialize();
@@ -674,52 +673,12 @@ class InitializeAnimationDemo{
 	
 	  _step(timeElapsed) {
 		const timeElapsedS = timeElapsed * 0.001;
-		if (this._mixers) {
-		  this._mixers.map(m => m.update(timeElapsedS));
-		}
 	
 		if (this._controls) {
 		  this._controls._update(timeElapsedS);
 		}
 	  }
 	
-	
 }
-
-
-
-
-function loadAnimatedModel(){
-	const mainHeroLoader = new FBXLoader();
-
-	mainHeroLoader.load( 
-		'./models/characters/The_Boss.fbx', 
-		function(fbx){
-			fbx.scale.setScalar(0.1);
-			fbx.traverse(c => {
-				c.castShadow = true;
-			})
-
-			const modAnimation = new FBXLoader();
-			modAnimation.load(
-					'./models/animations/Twist_Dance.fbx', 
-					anim => {
-						mixer = new THREE.AnimationMixer(fbx);
-						const idle = mixer.clipAction(anim.animations[0]);
-						idle.play();
-					}
-				)
-
-			scene.add( fbx);
-		}, 
-		undefined, 
-		function(error){
-			console.error( error );
-		} 
-	);
-}
-// loadAnimatedModel()
-
-
 
 const _App = new InitializeAnimationDemo();
