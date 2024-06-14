@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import {skyboxesList} from './const/skyboxes.js';
 
-const characterActions = ['dance', 'dance2', 'arguing'];
+const characterActions = ['dance', 'dance2', 'dance3', 'arguing', 'capoeira', 'pray'];
 
 
 class State {
@@ -238,17 +238,24 @@ class ActionState extends State {
 	constructor(parent) {
 	  super(parent);
 	  this._actionIndexRandomizer = new ActionRandomizer().getRandomIndex;
+	  this._updateActionIndex();
 	  this._finishedCallback = () => {
 		this._finished();
 	  }
 	}
   
 	get Name() {
-	  return 'dance';
+	  return this._curActionName;
 	}
-  
+
+	_updateActionIndex() {
+		this._actionIndex = this._actionIndexRandomizer(characterActions);
+		this._curActionName = characterActions[this._actionIndex];
+	}
+
 	enter(prevState) {
-	  const curAction = this._parent._proxy._animations['dance'].action;
+	  this._updateActionIndex();
+	  const curAction = this._parent._proxy._animations[this._curActionName].action;
 	  const mixer = curAction.getMixer();
 	  mixer.addEventListener('finished', this._finishedCallback);
   
@@ -271,9 +278,8 @@ class ActionState extends State {
 	}
   
 	_cleanup() {
-	  const action = this._parent._proxy._animations['dance'].action;
-	  
-	  action.getMixer().removeEventListener('finished', this._cleanupCallback);
+	  const action = this._parent._proxy._animations[this._curActionName].action;
+	  action.getMixer().removeEventListener('finished', this._finishedCallback);
 	}
   
 	exit() {
@@ -317,7 +323,7 @@ class ActionState extends State {
 	  } else if (input._keys.backward) {
 		this._parent.setState('walk_bwd');
 	  } else if (input._keys.action) {
-		this._parent.setState('dance');
+		this._parent.setState('action');
 	  }
 	}
   };
@@ -342,7 +348,8 @@ class FiniteStateMachine {
 		}
 		prevState.exit();
 	  }
-  
+	  console.log(name)
+	  console.log(this._states)
 	  const state = new this._states[name](this);
   
 	  this._currentState = state;
@@ -369,7 +376,7 @@ class FiniteStateMachine {
 	  this._addState('walk_bwd', WalkBWDState);
 	  this._addState('run_fwd', RunFWDState);
 	  this._addState('run_bwd', RunBWDState);
-	  this._addState('dance', ActionState);
+	  this._addState('action', ActionState);
 	}
   };
 
@@ -517,7 +524,7 @@ class BasicCharacterController {
       	loader.load('run_fwd.fbx', anim => { _onLoad('run_fwd', anim); });
       	loader.load('run_bwd.fbx', anim => { _onLoad('run_bwd', anim); });
       	loader.load('idle.fbx', anim => { _onLoad('idle', anim); });
-      	loader.load('dance.fbx', anim => { _onLoad('dance', anim); });
+		characterActions.forEach(actionName=>loader.load(actionName + '.fbx', anim => { _onLoad(actionName, anim); }))
 	  });
 	}
 	_update(timeInSeconds){
@@ -547,10 +554,6 @@ class BasicCharacterController {
 		  const acc = this._acceleration.clone();
 		  if (this._input._keys.shift) {
 			acc.multiplyScalar(2.0);
-		  }
-	  
-		  if (this._state == 'dance') {
-			acc.multiplyScalar(0.0);
 		  }
 	  
 		  if (this._input._keys.forward) {
