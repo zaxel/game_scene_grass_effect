@@ -14,23 +14,23 @@ class State {
 	update() {}
   };
 
-class RunState extends State {
+class RunFWDState extends State {
 	constructor(parent) {
 	  super(parent);
 	}
   
 	get Name() {
-	  return 'run';
+	  return 'run_fwd';
 	}
   
 	enter(prevState) {
-	  const curAction = this._parent._proxy._animations['run'].action;
+	  const curAction = this._parent._proxy._animations['run_fwd'].action;
 	  if (prevState) {
 		const prevAction = this._parent._proxy._animations[prevState.Name].action;
   
 		curAction.enabled = true;
   
-		if (prevState.Name == 'walk') {
+		if (prevState.Name == 'walk_fwd') {
 		  const ratio = curAction.getClip().duration / prevAction.getClip().duration;
 		  curAction.time = prevAction.time * ratio;
 		} else {
@@ -50,35 +50,93 @@ class RunState extends State {
 	}
   
 	update(timeElapsed, input) {
-	  if (input._keys.forward || input._keys.backward) {
-		if (!input._keys.shift) {
-		  this._parent.setState('walk');
-		}
+	  if (input._keys.forward && input._keys.shift) {
 		return;
 	  }
-  
-	  this._parent.setState('idle');
-	}
-  };
-  
+	  if (input._keys.forward && !input._keys.shift) {
+		  this._parent.setState('walk_fwd');
+		return;
+	  }
+	  if (input._keys.backward) {
+		  this._parent.setState('walk_bwd');
+		return;
+	  }
 
-  class WalkState extends State {
+		this._parent.setState('idle');
+	}
+
+  };
+class RunBWDState extends State {
 	constructor(parent) {
 	  super(parent);
 	}
   
 	get Name() {
-	  return 'walk';
+	  return 'run_bwd';
 	}
   
 	enter(prevState) {
-	  const curAction = this._parent._proxy._animations['walk'].action;
+	  const curAction = this._parent._proxy._animations['run_bwd'].action;
 	  if (prevState) {
 		const prevAction = this._parent._proxy._animations[prevState.Name].action;
   
 		curAction.enabled = true;
   
-		if (prevState.Name == 'run') {
+		if (prevState.Name == 'walk_bwd') {
+		  const ratio = curAction.getClip().duration / prevAction.getClip().duration;
+		  curAction.time = prevAction.time * ratio;
+		} else {
+		  curAction.time = 0.0;
+		  curAction.setEffectiveTimeScale(1.0);
+		  curAction.setEffectiveWeight(1.0);
+		}
+  
+		curAction.crossFadeFrom(prevAction, 0.5, true);
+		curAction.play();
+	  } else {
+		curAction.play();
+	  }
+	}
+  
+	exit() {
+	}
+  
+	update(timeElapsed, input) {
+	  if (input._keys.backward && input._keys.shift) {
+		return;
+	  }
+	  if (input._keys.backward && !input._keys.shift) {
+		  this._parent.setState('walk_bwd');
+		return;
+	  }
+	  if (input._keys.forward) {
+		  this._parent.setState('walk_fwd');
+		return;
+	  }
+
+		this._parent.setState('idle');
+	}
+
+  };
+  
+
+  class WalkFWDState extends State {
+	constructor(parent) {
+	  super(parent);
+	}
+  
+	get Name() {
+	  return 'walk_fwd';
+	}
+  
+	enter(prevState) {
+	  const curAction = this._parent._proxy._animations['walk_fwd'].action;
+	  if (prevState) {
+		const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+		curAction.enabled = true;
+  
+		if (prevState.Name == 'run_fwd') {
 		  const ratio = curAction.getClip().duration / prevAction.getClip().duration;
 		  curAction.time = prevAction.time * ratio;
 		} else {
@@ -98,15 +156,69 @@ class RunState extends State {
 	}
   
 	update(_, input) {
-	  if (input._keys.forward || input._keys.backward) {
+	  if (input._keys.forward) {
 		if (input._keys.shift) {
-		  this._parent.setState('run');
+		  this._parent.setState('run_fwd');
 		}
 		return;
 	  }
-  
-	  this._parent.setState('idle');
+	  if (input._keys.backward) {
+		  this._parent.setState('walk_bwd');
+		return;
+	  }
+  	  this._parent.setState('idle');
 	}
+  };
+
+  class WalkBWDState extends State {
+	constructor(parent) {
+	  super(parent);
+	}
+  
+	get Name() {
+	  return 'walk_bwd';
+	}
+  
+	enter(prevState) {
+	  const curAction = this._parent._proxy._animations['walk_bwd'].action;
+	  if (prevState) {
+		const prevAction = this._parent._proxy._animations[prevState.Name].action;
+  
+		curAction.enabled = true;
+  
+		if (prevState.Name == 'run_bwd') {
+		  const ratio = curAction.getClip().duration / prevAction.getClip().duration;
+		  curAction.time = prevAction.time * ratio;
+		} else {
+		  curAction.time = 0.0;
+		  curAction.setEffectiveTimeScale(1.0);
+		  curAction.setEffectiveWeight(1.0);
+		}
+  
+		curAction.crossFadeFrom(prevAction, 0.5, true);
+		curAction.play();
+	  } else {
+		curAction.play();
+	  }
+	}
+  
+	exit() {
+	}
+  
+	update(_, input) {
+		if (input._keys.backward) {
+			if (input._keys.shift) {
+			  this._parent.setState('run_bwd');
+			}
+			return;
+		  }
+		  if (input._keys.forward) {
+			  this._parent.setState('walk_fwd');
+			return;
+		  }
+			this._parent.setState('idle');
+		}
+	  
   };
 
 class DanceState extends State {
@@ -187,8 +299,10 @@ class DanceState extends State {
 	}
   
 	update(_, input) {
-	  if (input._keys.forward || input._keys.backward) {
-		this._parent.setState('walk');
+	  if (input._keys.forward) {
+		this._parent.setState('walk_fwd');
+	  } else if (input._keys.backward) {
+		this._parent.setState('walk_bwd');
 	  } else if (input._keys.space) {
 		this._parent.setState('dance');
 	  }
@@ -238,8 +352,10 @@ class FiniteStateMachine {
   
 	_initStates() {
 	  this._addState('idle', IdleState);
-	  this._addState('walk', WalkState);
-	  this._addState('run', RunState);
+	  this._addState('walk_fwd', WalkFWDState);
+	  this._addState('walk_bwd', WalkBWDState);
+	  this._addState('run_fwd', RunFWDState);
+	  this._addState('run_bwd', RunBWDState);
 	  this._addState('dance', DanceState);
 	}
   };
@@ -376,8 +492,10 @@ class BasicCharacterController {
 		
 		const loader = new FBXLoader(this._manager);
 		loader.setPath('./models/animations/');
-		loader.load('walk.fbx', anim => { _onLoad('walk', anim); });
-      	loader.load('run.fbx', anim => { _onLoad('run', anim); });
+		loader.load('walk_fwd.fbx', anim => { _onLoad('walk_fwd', anim); });
+		loader.load('walk_bwd.fbx', anim => { _onLoad('walk_bwd', anim); });
+      	loader.load('run_fwd.fbx', anim => { _onLoad('run_fwd', anim); });
+      	loader.load('run_bwd.fbx', anim => { _onLoad('run_bwd', anim); });
       	loader.load('idle.fbx', anim => { _onLoad('idle', anim); });
       	loader.load('dance.fbx', anim => { _onLoad('dance', anim); });
 	  });
