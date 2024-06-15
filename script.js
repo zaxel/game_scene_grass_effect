@@ -17,23 +17,22 @@ class State {
 };
 
 class JumpState extends State {
-	static _jumpStates = ['jumpStand', 'jumpWalkFwd', 'jumpWalkBwd', 'jumpRunFwd', 'jumpRunBwd'];
-	constructor(parent) {
+	static _jumpStates = ['jumpStand', 'jumpBwd', 'jumpFwd'];
+	constructor(parent, jumpType) {
 		super(parent);
+		this._jumpType = jumpType;;
 		this._finishedCallback = () => {
 			this._finished();
 		}
 	}
 	
-	get Name() {
-		return 'jumpStand';
+	
+	get Name(){
+		return this._jumpType;
 	}
 	
-	
-	
 	enter(prevState) {
-		console.log(this)
-	  const curAction = this._parent._proxy._animations['jumpStand'].action;
+	  const curAction = this._parent._proxy._animations[this._jumpType].action;
 	  const mixer = curAction.getMixer();
 	  mixer.addEventListener('finished', this._finishedCallback);
   
@@ -43,7 +42,7 @@ class JumpState extends State {
 		curAction.reset();  
 		curAction.setLoop(THREE.LoopOnce, 1);
 		curAction.clampWhenFinished = true;
-		curAction.crossFadeFrom(prevAction, 0.2, true);
+		curAction.crossFadeFrom(prevAction, 0.1, true);
 		curAction.play();
 	  } else {
 		curAction.play();
@@ -56,7 +55,7 @@ class JumpState extends State {
 	}
   
 	_cleanup() {
-	  const action = this._parent._proxy._animations['jumpStand'].action;
+	  const action = this._parent._proxy._animations[this._jumpType].action;
 	  action.getMixer().removeEventListener('finished', this._finishedCallback);
 	}
   
@@ -67,6 +66,24 @@ class JumpState extends State {
 	update() {
 	}
   };
+
+  class JumpStandState extends JumpState {
+	constructor(parent) {
+		super(parent, 'jumpStand');
+	}
+  };
+  class JumpFwdState extends JumpState {
+	constructor(parent) {
+		super(parent, 'jumpFwd');
+	}
+  };
+  class JumpBwdState extends JumpState {
+	constructor(parent) {
+		super(parent, 'jumpBwd');
+	}
+  };
+  
+
 
 class RunFWDState extends State {
 	constructor(parent) {
@@ -93,7 +110,7 @@ class RunFWDState extends State {
 		  curAction.setEffectiveWeight(1.0);
 		}
   
-		curAction.crossFadeFrom(prevAction, 0.5, true);
+		curAction.crossFadeFrom(prevAction, 0.2, true);
 		curAction.play();
 	  } else {
 		curAction.play();
@@ -104,8 +121,12 @@ class RunFWDState extends State {
 	}
   
 	update(timeElapsed, input) {
+		if(input._keys.ctrl){
+			this._parent.setState('jumpFwd');
+			return;
+		}
 	  if (input._keys.forward && input._keys.shift) {
-		return;
+			  return;
 	  }
 	  if (input._keys.forward && !input._keys.shift) {
 		  this._parent.setState('walk_fwd');
@@ -145,7 +166,7 @@ class RunBWDState extends State {
 		  curAction.setEffectiveWeight(1.0);
 		}
   
-		curAction.crossFadeFrom(prevAction, 0.5, true);
+		curAction.crossFadeFrom(prevAction, 0.2, true);
 		curAction.play();
 	  } else {
 		curAction.play();
@@ -156,6 +177,10 @@ class RunBWDState extends State {
 	}
   
 	update(timeElapsed, input) {
+		if(input._keys.ctrl){
+			this._parent.setState('jumpBwd');
+			return;
+		}
 	  if (input._keys.backward && input._keys.shift) {
 		return;
 	  }
@@ -214,6 +239,9 @@ class RunBWDState extends State {
 		if (input._keys.shift) {
 		  this._parent.setState('run_fwd');
 		}
+		if(input._keys.ctrl){
+			this._parent.setState('jumpFwd');
+		}
 		return;
 	  }
 	  if (input._keys.backward) {
@@ -263,6 +291,9 @@ class RunBWDState extends State {
 		if (input._keys.backward) {
 			if (input._keys.shift) {
 			  this._parent.setState('run_bwd');
+			}
+			if(input._keys.ctrl){
+				this._parent.setState('jumpBwd');
 			}
 			return;
 		  }
@@ -374,8 +405,8 @@ class ActionState extends State {
 		this._parent.setState('walk_fwd');
 	  } else if (input._keys.backward) {
 		this._parent.setState('walk_bwd');
-	  }else if (input._keys.space) {
-		this._parent.setState('jump');
+	  }else if (input._keys.ctrl) {
+		this._parent.setState('jumpStand');
 	  } else if (input._keys.action) {
 		this._parent.setState('action');
 	  }
@@ -431,7 +462,11 @@ class FiniteStateMachine {
 	  this._addState('run_fwd', RunFWDState);
 	  this._addState('run_bwd', RunBWDState);
 	  this._addState('action', ActionState);
-	  this._addState('jump', JumpState);
+	  this._addState('jumpStand', JumpStandState);
+	//   this._addState('jumpWalkFwd', JumpWalkFwdState);
+	  this._addState('jumpBwd', JumpBwdState);
+	  this._addState('jumpFwd', JumpFwdState);
+	//   this._addState('jumpRunBwd', JumpRunBwdState);
 	}
   };
 
@@ -485,6 +520,9 @@ class BasicButtonPressedController {
 		case 32: // SPACE
 		  this._keys.space = true;
 		  break;
+		case 17: // CTRL
+		  this._keys.ctrl = true;
+		  break;
 		case 82: // r
 		  this._keys.action = true;
 		  break;
@@ -514,6 +552,9 @@ class BasicButtonPressedController {
 		  break;
 		case 32: // SPACE
 		  this._keys.space = false;
+		  break;
+		case 17: // CTRL
+		  this._keys.ctrl = false;
 		  break;
 		case 82: // r
 		  this._keys.action = false;
@@ -571,7 +612,7 @@ class BasicCharacterController {
 			};
 		};
   
-		const jumpStates = this._stateMachine._states.jump._jumpStates;
+		const jumpStates = JumpState._jumpStates;
 
 		const loader = new FBXLoader(this._manager);
 		loader.setPath('./models/animations/');
