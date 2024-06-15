@@ -8,12 +8,64 @@ const characterActions = ['dance', 'dance2', 'dance3', 'arguing', 'capoeira', 'p
 
 class State {
 	constructor(parent) {
-	  this._parent = parent;
+		this._parent = parent;
 	}
-  
+	
 	enter() {}
 	exit() {}
 	update() {}
+};
+
+class JumpState extends State {
+	static _jumpStates = ['jumpStand', 'jumpWalkFwd', 'jumpWalkBwd', 'jumpRunFwd', 'jumpRunBwd'];
+	constructor(parent) {
+		super(parent);
+		this._finishedCallback = () => {
+			this._finished();
+		}
+	}
+	
+	get Name() {
+		return 'jumpStand';
+	}
+	
+	
+	
+	enter(prevState) {
+		console.log(this)
+	  const curAction = this._parent._proxy._animations['jumpStand'].action;
+	  const mixer = curAction.getMixer();
+	  mixer.addEventListener('finished', this._finishedCallback);
+  
+	  if (prevState) {
+		const prevAction = this._parent._proxy._animations[prevState.Name].action;
+
+		curAction.reset();  
+		curAction.setLoop(THREE.LoopOnce, 1);
+		curAction.clampWhenFinished = true;
+		curAction.crossFadeFrom(prevAction, 0.2, true);
+		curAction.play();
+	  } else {
+		curAction.play();
+	  }
+	}
+  
+	_finished() {
+	  this._cleanup();
+	  this._parent.setState('idle');
+	}
+  
+	_cleanup() {
+	  const action = this._parent._proxy._animations['jumpStand'].action;
+	  action.getMixer().removeEventListener('finished', this._finishedCallback);
+	}
+  
+	exit() {
+	  this._cleanup();
+	}
+  
+	update() {
+	}
   };
 
 class RunFWDState extends State {
@@ -322,6 +374,8 @@ class ActionState extends State {
 		this._parent.setState('walk_fwd');
 	  } else if (input._keys.backward) {
 		this._parent.setState('walk_bwd');
+	  }else if (input._keys.space) {
+		this._parent.setState('jump');
 	  } else if (input._keys.action) {
 		this._parent.setState('action');
 	  }
@@ -377,6 +431,7 @@ class FiniteStateMachine {
 	  this._addState('run_fwd', RunFWDState);
 	  this._addState('run_bwd', RunBWDState);
 	  this._addState('action', ActionState);
+	  this._addState('jump', JumpState);
 	}
   };
 
@@ -516,7 +571,8 @@ class BasicCharacterController {
 			};
 		};
   
-		
+		const jumpStates = this._stateMachine._states.jump._jumpStates;
+
 		const loader = new FBXLoader(this._manager);
 		loader.setPath('./models/animations/');
 		loader.load('walk_fwd.fbx', anim => { _onLoad('walk_fwd', anim); });
@@ -525,6 +581,7 @@ class BasicCharacterController {
       	loader.load('run_bwd.fbx', anim => { _onLoad('run_bwd', anim); });
       	loader.load('idle.fbx', anim => { _onLoad('idle', anim); });
 		characterActions.forEach(actionName=>loader.load(actionName + '.fbx', anim => { _onLoad(actionName, anim); }))
+		jumpStates.forEach(actionName=>loader.load(actionName + '.fbx', anim => { _onLoad(actionName, anim); }))
 	  });
 	}
 	_update(timeInSeconds){
