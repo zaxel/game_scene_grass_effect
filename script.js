@@ -718,17 +718,17 @@ class ThirdPersonViewCamera {
 		this._position = new THREE.Vector3();
 		this._lookAt = new THREE.Vector3();
 	}
+	_calcTransformedPosition(x, y, z){
+		const transformedPosition  = new THREE.Vector3(x,y,z);
+		transformedPosition .applyQuaternion(this._params.target.rotation);
+		transformedPosition .add(this._params.target.position);
+		return transformedPosition ;
+	}
 	_calcIdealOffset() {
-		const idealOffset = new THREE.Vector3(-20, 20, -30);
-		idealOffset.applyQuaternion(this._params.target.rotation);
-		idealOffset.add(this._params.target.position);
-		return idealOffset;
+		return this._calcTransformedPosition(-20, 20, -30);
 	}
 	_calcIdealLookAt() {
-		const idealLookAt = new THREE.Vector3(0, 10, 40);
-		idealLookAt.applyQuaternion(this._params.target.rotation);
-		idealLookAt.add(this._params.target.position);
-		return idealLookAt;
+		return this._calcTransformedPosition(0, 10, 40);
 	}
 	_update(timeElapsedS) {
 		const idealOffset = this._calcIdealOffset();
