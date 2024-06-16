@@ -733,8 +733,10 @@ class ThirdPersonViewCamera {
 	_update(timeElapsedS) {
 		const idealOffset = this._calcIdealOffset();
 		const idealLookAt = this._calcIdealLookAt();
-		this._position.copy(idealOffset);
-		this._lookAt.copy(idealLookAt);
+		const t = 1 - .001 ** timeElapsedS;
+
+		this._position.lerp(idealOffset, t);
+		this._lookAt.lerp(idealLookAt, t);
 
 		this._camera.position.copy(this._position);
 		this._camera.lookAt(this._lookAt);
