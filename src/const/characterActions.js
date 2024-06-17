@@ -1,0 +1,1 @@
+﻿export const characterActions = ['dance', 'dance2', 'dance3', 'arguing', 'capoeira', 'pray'];
