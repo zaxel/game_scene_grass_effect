@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { skyboxesList } from './src/const/skyboxes.js';
 import { ThirdPersonViewCamera } from './src/game/camera/thirdPersonCamera.js';
 import { BasicCharacterController } from './src/game/characterController/controller.js';
+import { DirectionalLight } from './src/game/light/directionalLight.js';
+
 
 
 class InitializeAnimationDemo {
@@ -37,21 +39,7 @@ class InitializeAnimationDemo {
 		// controls.target.set(0, 20, 0);
 		// controls.update();
 
-		let dirLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-		dirLight.position.set(-100, 100, 100);
-		dirLight.target.position.set(0, 0, 0);
-		dirLight.castShadow = true;
-		dirLight.shadow.bias = -0.001;
-		dirLight.shadow.mapSize.width = 4096;
-		dirLight.shadow.mapSize.height = 4096;
-		dirLight.shadow.camera.near = 0.1;
-		dirLight.shadow.camera.far = 500.0;
-		dirLight.shadow.camera.near = 0.5;
-		dirLight.shadow.camera.far = 500.0;
-		dirLight.shadow.camera.left = 50;
-		dirLight.shadow.camera.right = -50;
-		dirLight.shadow.camera.top = 50;
-		dirLight.shadow.camera.bottom = -50;
+		let dirLight = new DirectionalLight()._dirLight;
 
 		let amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
 
