@@ -1,28 +1,18 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { skyboxesList } from './src/const/skyboxes.js';
 import { ThirdPersonViewCamera } from './src/game/camera/thirdPersonCamera.js';
 import { BasicCharacterController } from './src/game/characterController/controller.js';
 import { DirectionalLight } from './src/game/light/directionalLight.js';
 import { Mesh } from './src/game/terrain/mesh.js';
 import { Grid } from './src/game/terrain/grid.js';
+import { FreeCamera } from './src/game/camera/freeCamera.js';
 
-	class FreeCamera{
-		constructor(camera, element){
-			this._freeCamera;
-			this._initCamera(camera, element);
-		}
-		_initCamera(camera, element){
-			this._freeCamera = new OrbitControls(camera, element);
-			this._freeCamera.target.set(0, 20, 0);
-			this._freeCamera.update();
-		}
-	}
+	
 
 	class InitializeAnimationDemo {
 	constructor() {
 		this._previousFrame = null;
-		this.thirdPersonCamera = false;
+		this.thirdPersonCamera = true;
 		this._initialize();
 		this._loadAnimatedModel();
 		this._animate();
