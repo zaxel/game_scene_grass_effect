@@ -56,7 +56,7 @@ class InitializeAnimationDemo {
 		let amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
 
 		const plane = new THREE.Mesh(
-			new THREE.PlaneGeometry(100, 100, 10, 10),
+			new THREE.PlaneGeometry(200, 200, 10, 10),
 			new THREE.MeshStandardMaterial({
 				color: 0xCCCCCC,
 			}));
@@ -68,6 +68,13 @@ class InitializeAnimationDemo {
 		this._scene.add(dirLight);
 		this._scene.add(amLight);
 		this._scene.add(plane);
+
+
+		this._grid = new THREE.GridHelper( 100, 10, 0xffffff, 0xffffff );
+		this._grid.material.opacity = 0.2;
+		this._grid.material.depthWrite = false;
+		this._grid.material.transparent = true;
+		this._scene.add( this._grid );
 	}
 	_loadAnimatedModel() {
 		const params = {
