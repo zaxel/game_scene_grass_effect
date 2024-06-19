@@ -7,15 +7,16 @@ import { Mesh } from './src/game/terrain/mesh.js';
 import { Grid } from './src/game/terrain/grid.js';
 import { FreeCamera } from './src/game/camera/freeCamera.js';
 
-	
 
-	class InitializeAnimationDemo {
-	constructor() {
+
+class InitializeAnimationDemo {
+	constructor(grassField) {
 		this._previousFrame = null;
-		this.thirdPersonCamera = true;
-		this._initialize();
-		this._loadAnimatedModel();
+		this.thirdPersonCamera = false;
+		// this._loadAnimatedModel();
 		this._animate();
+		this.grassField = grassField;
+		this._initialize();
 	}
 	_initialize() {
 		this._scene = new THREE.Scene();
@@ -49,6 +50,9 @@ import { FreeCamera } from './src/game/camera/freeCamera.js';
 		this._scene.add(amLight);
 		this._scene.add(plane);
 		this._scene.add(grid );
+
+		if(this.grassField)
+			this._scene.add(this.grassField );
 	}
 	_loadAnimatedModel() {
 		const params = {
@@ -88,4 +92,33 @@ import { FreeCamera } from './src/game/camera/freeCamera.js';
 
 }
 
-const _App = new InitializeAnimationDemo();
+
+
+
+
+class InitializeGrass extends THREE.Group{
+	constructor(){
+		super();
+		this._axisHelper = new THREE.AxesHelper(3);
+		this.add(this._axisHelper);
+
+		this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
+	}
+
+	createParticles(){
+
+	}
+	update(){
+
+	}
+}
+
+class Init{
+	constructor(){
+		this.grassField = new InitializeGrass();
+		new InitializeAnimationDemo(this.grassField);
+	}
+}
+
+
+const _App = new Init();
