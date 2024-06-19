@@ -4,10 +4,11 @@ import { skyboxesList } from './src/const/skyboxes.js';
 import { ThirdPersonViewCamera } from './src/game/camera/thirdPersonCamera.js';
 import { BasicCharacterController } from './src/game/characterController/controller.js';
 import { DirectionalLight } from './src/game/light/directionalLight.js';
+import { Mesh } from './src/game/terrain/mesh.js';
 
 
 
-class InitializeAnimationDemo {
+	class InitializeAnimationDemo {
 	constructor() {
 		this._previousFrame = null;
 
@@ -43,15 +44,7 @@ class InitializeAnimationDemo {
 
 		let amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
 
-		const plane = new THREE.Mesh(
-			new THREE.PlaneGeometry(200, 200, 10, 10),
-			new THREE.MeshStandardMaterial({
-				color: 0xCCCCCC,
-			}));
-
-		plane.castShadow = false;
-		plane.receiveShadow = true;
-		plane.rotation.x = -Math.PI / 2;
+		const plane = new Mesh(200, 200, 10, 10)._mesh;
 
 		this._scene.add(dirLight);
 		this._scene.add(amLight);
