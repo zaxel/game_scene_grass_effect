@@ -5,13 +5,24 @@ import { ThirdPersonViewCamera } from './src/game/camera/thirdPersonCamera.js';
 import { BasicCharacterController } from './src/game/characterController/controller.js';
 import { DirectionalLight } from './src/game/light/directionalLight.js';
 import { Mesh } from './src/game/terrain/mesh.js';
+import { Grid } from './src/game/terrain/grid.js';
 
-
+	class FreeCamera{
+		constructor(camera, element){
+			this._freeCamera;
+			this._initCamera(camera, element);
+		}
+		_initCamera(camera, element){
+			this._freeCamera = new OrbitControls(camera, element);
+			this._freeCamera.target.set(0, 20, 0);
+			this._freeCamera.update();
+		}
+	}
 
 	class InitializeAnimationDemo {
 	constructor() {
 		this._previousFrame = null;
-
+		this.thirdPersonCamera = false;
 		this._initialize();
 		this._loadAnimatedModel();
 		this._animate();
@@ -28,34 +39,26 @@ import { Mesh } from './src/game/terrain/mesh.js';
 		this._renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(this._renderer.domElement);
 
-		this._camera.position.set(0, 0, 0);
+		this._camera.position.set(-30, 50, 70);
 
 		const loader = new THREE.CubeTextureLoader();
 
 		const texture = loader.load(skyboxesList.sh);
 		texture.encoding = THREE.sRGBEncoding;
 		this._scene.background = texture;
+		if(!this.thirdPersonCamera){
+			new FreeCamera(this._camera, this._renderer.domElement)._freeCamera;
+		}
 
-		// const controls = new OrbitControls(this._camera, this._renderer.domElement);
-		// controls.target.set(0, 20, 0);
-		// controls.update();
-
-		let dirLight = new DirectionalLight()._dirLight;
-
-		let amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
-
+		const dirLight = new DirectionalLight()._dirLight;
+		const amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
 		const plane = new Mesh(200, 200, 10, 10)._mesh;
+		const grid = new Grid(100, 10, 0xffffff, 0xffffff)._grid;
 
 		this._scene.add(dirLight);
 		this._scene.add(amLight);
 		this._scene.add(plane);
-
-
-		this._grid = new THREE.GridHelper( 100, 10, 0xffffff, 0xffffff );
-		this._grid.material.opacity = 0.2;
-		this._grid.material.depthWrite = false;
-		this._grid.material.transparent = true;
-		this._scene.add( this._grid );
+		this._scene.add(grid );
 	}
 	_loadAnimatedModel() {
 		const params = {
@@ -88,7 +91,9 @@ import { Mesh } from './src/game/terrain/mesh.js';
 		if (this._controls) {
 			this._controls._update(timeElapsedS);
 		}
-		this._thirdPersonViewCamera._update(timeElapsedS);
+		if(this.thirdPersonCamera){
+			this._thirdPersonViewCamera._update(timeElapsedS);
+		}
 	}
 
 }
