@@ -171,11 +171,12 @@ class InitializeGrass extends THREE.Group{
 
 		this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
 
-		this.instances = 1;
-		this.w = 10;
-		this.d = 10;
+		this.instances = 10;
+		this.w = 100;
+		this.d = 100;
 		this.h = 0;
 
+		this.terrainPositions = [];
 		this.positions = [];
 		this.indices = [];
 		this.uvs = [];
@@ -185,10 +186,10 @@ class InitializeGrass extends THREE.Group{
 	}
 
 	createParticles(){
-		this.positions.push(5, -5, 0);
-		this.positions.push(-5, -5, 0);
-		this.positions.push(-5, 5, 0);
-		this.positions.push(5, 5, 0);
+		this.positions.push(10, -10, 0);
+		this.positions.push(-10, -10, 0);
+		this.positions.push(-10, 10, 0);
+		this.positions.push(10, 10, 0);
 
 		this.indices.push(0);
 		this.indices.push(1);
@@ -203,7 +204,10 @@ class InitializeGrass extends THREE.Group{
 		this.uvs.push(1.0, 1.0);
 
 		for(let i=0; i<this.instances; i++){
-
+			let posX = Math.random() * this.w - this.w/2;
+			let posY = this.h;
+			let posZ = Math.random() * this.d - this.d/2;
+			this.terrainPositions.push(posX, posY, posZ);
 		}
 
 		this.geo = new THREE.InstancedBufferGeometry();
@@ -212,6 +216,7 @@ class InitializeGrass extends THREE.Group{
 		this.geo.setAttribute( 'position', new THREE.Float32BufferAttribute( this.positions, 3 ) );
         this.geo.setAttribute( 'uv', new THREE.Float32BufferAttribute( this.uvs, 2 ) );
         this.geo.setIndex(new THREE.BufferAttribute(new Uint16Array( this.indices ), 1));
+		this.geo.setAttribute( 'terPos', new THREE.InstancedBufferAttribute( new Float32Array( this.terrainPositions ), 3 ) );
 
 
 		const grassMaterialInstance = new GrassShaderMaterials();
