@@ -6,6 +6,7 @@ import { DirectionalLight } from './src/game/light/directionalLight.js';
 import { Mesh } from './src/game/terrain/mesh.js';
 import { Grid } from './src/game/terrain/grid.js';
 import { FreeCamera } from './src/game/camera/freeCamera.js';
+import { loadShader, shadersMap } from './src/game/utils/loadShaders.js';
 
 
 
@@ -13,10 +14,10 @@ class InitializeAnimationDemo {
 	constructor(grassField) {
 		this._previousFrame = null;
 		this.thirdPersonCamera = false;
-		// this._loadAnimatedModel();
 		this._animate();
 		this.grassField = grassField;
 		this._initialize();
+		// this._loadAnimatedModel();
 	}
 	_initialize() {
 		this._scene = new THREE.Scene();
@@ -51,8 +52,9 @@ class InitializeAnimationDemo {
 		this._scene.add(plane);
 		this._scene.add(grid );
 
-		if(this.grassField)
+		if(this.grassField){
 			this._scene.add(this.grassField );
+		}
 	}
 	_loadAnimatedModel() {
 		const params = {
@@ -92,9 +94,74 @@ class InitializeAnimationDemo {
 
 }
 
+class GrassMaterial{
+	constructor(){
+		this.grassMaskTexture = new THREE.TextureLoader().load( './public/textures/grass.jpg' );
+		this.grassDiffTexture = new THREE.TextureLoader().load( './public/textures/grass_diffuse.jpg' );
+	}
 
+	grassMaterial( shaders ){
+		const uniforms = {
+			grassMaskTex: { value: this.grassMaskTexture },
+			grassDiffTex: { value: this.grassDiffTexture },
+			time: { type: 'float', value: 0 },
+		};
+	
+		const Grass_VS = shaders.get('grass_VS');
+		const Grass_FS = shaders.get('grass_FS');
+		
+		const basicShaderMaterial = new THREE.RawShaderMaterial( {
+	
+			uniforms: uniforms,
+			vertexShader: Grass_VS,
+			fragmentShader: Grass_FS,
+			
+			// blending: THREE.AdditiveBlending,
+			side:THREE.DoubleSide,
+			// depthTest : false,
+			// depthWrite : false,
+			// transparent: true,
+			// vertexColors: true
+	
+		} );
+	
+		return basicShaderMaterial;
+	}
+	
+}
 
+class GrassShaderMaterials{
+	constructor(){
+		this.grassMaskTex = new THREE.TextureLoader().load( '/textures/grass.jpg' );
+		this.grassDiffTex = new THREE.TextureLoader().load( '/textures/grass_diffuse.jpg' );
+	}
 
+	shaderMaterial( shaders ){
+		const uniforms = {
+			time: { value: 0 },
+			grassMaskTex: { value: this.grassMaskTex },
+			grassDiffTex: { value: this.grassDiffTex },
+		
+		};
+	
+		const Grass_VS = shaders.get('grass_VS');
+		const Grass_FS = shaders.get('grass_FS');
+	
+		const basicShaderMaterial = new THREE.RawShaderMaterial( {
+	
+			uniforms: uniforms,
+			vertexShader: Grass_VS,
+			fragmentShader: Grass_FS,
+			// blending: THREE.AdditiveBlending,
+			side:THREE.DoubleSide,
+			// depthTest : false,
+			// depthWrite : false,
+			// transparent: true,
+			// vertexColors: true
+		} );
+		return basicShaderMaterial;
+	}
+}
 
 class InitializeGrass extends THREE.Group{
 	constructor(){
@@ -103,9 +170,56 @@ class InitializeGrass extends THREE.Group{
 		this.add(this._axisHelper);
 
 		this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
+
+		this.instances = 1;
+		this.w = 10;
+		this.d = 10;
+		this.h = 0;
+
+		this.positions = [];
+		this.indices = [];
+		this.uvs = [];
+
+		this.geo;
+		this.particles;
 	}
 
 	createParticles(){
+		this.positions.push(5, -5, 0);
+		this.positions.push(-5, -5, 0);
+		this.positions.push(-5, 5, 0);
+		this.positions.push(5, 5, 0);
+
+		this.indices.push(0);
+		this.indices.push(1);
+		this.indices.push(2);
+		this.indices.push(2);
+		this.indices.push(3);
+		this.indices.push(0);
+
+		this.uvs.push(1.0, 0.0);
+		this.uvs.push(0.0, 0.0);
+		this.uvs.push(0.0, 1.0);
+		this.uvs.push(1.0, 1.0);
+
+		for(let i=0; i<this.instances; i++){
+
+		}
+
+		this.geo = new THREE.InstancedBufferGeometry();
+		this.geo.instanceCount = this.instances;
+
+		this.geo.setAttribute( 'position', new THREE.Float32BufferAttribute( this.positions, 3 ) );
+        this.geo.setAttribute( 'uv', new THREE.Float32BufferAttribute( this.uvs, 2 ) );
+        this.geo.setIndex(new THREE.BufferAttribute(new Uint16Array( this.indices ), 1));
+
+
+		const grassMaterialInstance = new GrassShaderMaterials();
+		const grassMaterial = grassMaterialInstance.shaderMaterial(shadersMap);
+
+		this.grassParticles = new THREE.Mesh(this.geo, grassMaterial);
+        this.grassParticles.frustumCulled = false;
+        this.add(this.grassParticles);
 
 	}
 	update(){
@@ -113,12 +227,14 @@ class InitializeGrass extends THREE.Group{
 	}
 }
 
-class Init{
-	constructor(){
+class InitApp{
+	async init(){
+		await loadShader();
 		this.grassField = new InitializeGrass();
+		this.grassField.createParticles();
 		new InitializeAnimationDemo(this.grassField);
 	}
 }
 
 
-const _App = new Init();
+const _App = new InitApp().init();
