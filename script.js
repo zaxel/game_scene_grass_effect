@@ -43,7 +43,7 @@ class InitializeAnimationDemo {
 		}
 
 		const dirLight = new DirectionalLight()._dirLight;
-		const amLight = new THREE.AmbientLight(0xFFFFFF, 0.25);
+		const amLight = new THREE.AmbientLight(0xFFFFFF, .25);
 		const plane = new Mesh(200, 200, 10, 10)._mesh;
 		const grid = new Grid(100, 10, 0xffffff, 0xffffff)._grid;
 
@@ -171,7 +171,7 @@ class InitializeGrass extends THREE.Group{
 
 		this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
 
-		this.instances = 1000;
+		this.instances = 10000;
 		this.w = 100;
 		this.d = 100;
 		this.h = 0;
@@ -180,6 +180,7 @@ class InitializeGrass extends THREE.Group{
 		this.positions = [];
 		this.indices = [];
 		this.uvs = [];
+		this.angles = [];
 
 		this.geo;
 		this.particles;
@@ -207,10 +208,10 @@ class InitializeGrass extends THREE.Group{
 			let posX = Math.random() * this.w - this.w/2;
 			let posY = this.h;
 			let posZ = Math.random() * this.d - this.d/2;
-
-			// posX = posY = posZ = 0;
+			let angle = Math.random()*45;
 
 			this.terrainPositions.push(posX, posY, posZ);
+			this.angles.push(angle);
 		}
 
 		this.geo = new THREE.InstancedBufferGeometry();
@@ -220,6 +221,7 @@ class InitializeGrass extends THREE.Group{
         this.geo.setAttribute( 'uv', new THREE.Float32BufferAttribute( this.uvs, 2 ) );
         this.geo.setIndex(new THREE.BufferAttribute(new Uint16Array( this.indices ), 1));
 		this.geo.setAttribute( 'terPos', new THREE.InstancedBufferAttribute( new Float32Array( this.terrainPositions ), 3 ) );
+		this.geo.setAttribute( 'angle', new THREE.InstancedBufferAttribute( new Float32Array( this.angles ), 1 ) );
 
 
 		const grassMaterialInstance = new GrassShaderMaterials();
