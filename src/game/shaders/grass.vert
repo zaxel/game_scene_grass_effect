@@ -7,6 +7,10 @@ attribute vec3 position;
 attribute vec3 terPos;
 
 void main(){
-    vec3 finalPos = position + terPos;
+    vec3 finalPos = position;
+    finalPos.x *= .05;
+    finalPos.y += 4.0;
+    finalPos += terPos;
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
 }

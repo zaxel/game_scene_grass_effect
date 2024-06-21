@@ -171,7 +171,7 @@ class InitializeGrass extends THREE.Group{
 
 		this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
 
-		this.instances = 10;
+		this.instances = 1000;
 		this.w = 100;
 		this.d = 100;
 		this.h = 0;
@@ -186,10 +186,10 @@ class InitializeGrass extends THREE.Group{
 	}
 
 	createParticles(){
-		this.positions.push(10, -10, 0);
-		this.positions.push(-10, -10, 0);
-		this.positions.push(-10, 10, 0);
-		this.positions.push(10, 10, 0);
+		this.positions.push(4, -4, 0);
+		this.positions.push(-4, -4, 0);
+		this.positions.push(-4, 4, 0);
+		this.positions.push(4, 4, 0);
 
 		this.indices.push(0);
 		this.indices.push(1);
@@ -207,6 +207,9 @@ class InitializeGrass extends THREE.Group{
 			let posX = Math.random() * this.w - this.w/2;
 			let posY = this.h;
 			let posZ = Math.random() * this.d - this.d/2;
+
+			// posX = posY = posZ = 0;
+
 			this.terrainPositions.push(posX, posY, posZ);
 		}
 
