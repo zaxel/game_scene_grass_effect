@@ -132,15 +132,15 @@ class GrassMaterial{
 
 class GrassShaderMaterials{
 	constructor(){
-		this.grassMaskTex = new THREE.TextureLoader().load( '/textures/grass.jpg' );
-		this.grassDiffTex = new THREE.TextureLoader().load( '/textures/grass_diffuse.jpg' );
+		this.grassMaskTexture = new THREE.TextureLoader().load( '/textures/grass.jpg' );
+		this.grassDiffTexture = new THREE.TextureLoader().load( '/textures/grass_diffuse.jpg' );
 	}
 
 	shaderMaterial( shaders ){
 		const uniforms = {
 			time: { value: 0 },
-			grassMaskTex: { value: this.grassMaskTex },
-			grassDiffTex: { value: this.grassDiffTex },
+			grassMaskTexture: { value: this.grassMaskTexture },
+			grassDiffTexture: { value: this.grassDiffTexture },
 		
 		};
 	
