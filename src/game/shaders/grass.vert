@@ -12,7 +12,7 @@ varying vec2 vUv;
 void main(){
     vUv = uv;
     vec3 finalPos = position;
-    finalPos.x *= .05;
+    finalPos.x *= .1;
     finalPos.y += 4.0;
     finalPos += terPos;
 
