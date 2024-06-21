@@ -1,4 +1,4 @@
-﻿export const basicShaderUrl = 'src/game/shaders/';
+﻿export const basicShaderUrl = '/shaders/';
 
 export const shaderURLs = [
     basicShaderUrl + 'grass.vert',

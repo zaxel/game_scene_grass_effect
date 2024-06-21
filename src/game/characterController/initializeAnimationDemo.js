@@ -10,7 +10,7 @@ import { ThirdPersonViewCamera } from '../camera/thirdPersonCamera';
 export class InitializeAnimationDemo {
 	constructor(grassField) {
 		this._previousFrame = null;
-		this.thirdPersonCamera = true;
+		this.thirdPersonCamera = false;
 		this._animate();
 		this.grassField = grassField;
 		this._initialize();
@@ -41,13 +41,13 @@ export class InitializeAnimationDemo {
 
 		const dirLight = new DirectionalLight()._dirLight;
 		const amLight = new THREE.AmbientLight(0xFFFFFF, .25);
-		const plane = new Mesh(200, 200, 10, 10)._mesh;
+		const plane = new Mesh(500, 500, 10, 10)._mesh;
 		const grid = new Grid(100, 10, 0xffffff, 0xffffff)._grid;
 
 		this._scene.add(dirLight);
 		this._scene.add(amLight);
 		this._scene.add(plane);
-		this._scene.add(grid );
+		// this._scene.add(grid );
 
 		if(this.grassField){
 			this._scene.add(this.grassField );

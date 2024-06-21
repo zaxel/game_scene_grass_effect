@@ -8,9 +8,9 @@ export class InitializeGrass extends THREE.Group{
 		this._axisHelper = new THREE.AxesHelper(3);
 		this.add(this._axisHelper);
 
-		this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
+		// this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
 
-		this.instances = 10000;
+		this.instances = 5000;
 		this.w = 100;
 		this.d = 100;
 		this.h = 0;
