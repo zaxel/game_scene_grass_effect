@@ -74,10 +74,13 @@ class InitializeAnimationDemo {
 			if (this._previousFrame === null) {
 				this._previousFrame = t;
 			}
-			this._animate();
+			if(this.grassField){
+				this.grassField.update(t);
+			}
 			this._renderer.render(this._scene, this._camera);
 			this._step(t - this._previousFrame);
 			this._previousFrame = t;
+			this._animate();
 		});
 	}
 
@@ -143,7 +146,7 @@ class GrassShaderMaterials{
 			grassDiffTexture: { value: this.grassDiffTexture },
 		
 		};
-	
+
 		const Grass_VS = shaders.get('grass_VS');
 		const Grass_FS = shaders.get('grass_FS');
 	
@@ -232,8 +235,8 @@ class InitializeGrass extends THREE.Group{
         this.add(this.grassParticles);
 
 	}
-	update(){
-
+	update(t){
+		this.grassParticles.material.uniforms.time.value = t;
 	}
 }
 

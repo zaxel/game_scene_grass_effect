@@ -2,6 +2,7 @@
 uniform mat4 viewMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 modelMatrix;
+uniform float time;
 
 attribute vec3 position;
 attribute vec3 terPos;
@@ -35,6 +36,11 @@ void main(){
 
     finalPos.x *= .1;
     finalPos.y += 4.0;
+
+    if(finalPos.y > 4.0){
+        finalPos.x = (finalPos.x + sin(time / 100.0 * (angle * 0.01)) * 0.3);
+        finalPos.z = (finalPos.z + cos(time / 100.0 * (angle * 0.01)) * 0.5);
+    }
 
     finalPos = rotateVertPos(finalPos, rotateAxis, angle);
 
