@@ -34,12 +34,12 @@ void main(){
     vec3 finalPos = position;
     vec3 rotateAxis = vec3(0.0, 1.0, 0.0);
 
-    finalPos.x *= .1;
+    finalPos.x *= 0.1;
     finalPos.y += 4.0;
 
     if(finalPos.y > 4.0){
-        finalPos.x = (finalPos.x + sin(time / 100.0 * (angle * 0.01)) * 0.3);
-        finalPos.z = (finalPos.z + cos(time / 100.0 * (angle * 0.01)) * 0.5);
+        finalPos.x = (finalPos.x + sin(time / 2500.0 * (angle * 0.01)) * 1.0);
+        finalPos.z = (finalPos.z + cos(time / 2500.0 * (angle * 0.01)) * 0.5);
     }
 
     finalPos = rotateVertPos(finalPos, rotateAxis, angle);

@@ -6,13 +6,12 @@ export class InitializeGrass extends THREE.Group{
 	constructor(){
 		super();
 		this._axisHelper = new THREE.AxesHelper(3);
-		this.add(this._axisHelper);
-
+		// this.add(this._axisHelper);
 		// this.grassMat = new THREE.MeshBasicMaterial({color: 0x026417});
 
-		this.instances = 5000;
-		this.w = 100;
-		this.d = 100;
+		this.instances = 30000;
+		this.w = 300;
+		this.d = 300;
 		this.h = 0;
 
 		this.terrainPositions = [];
@@ -47,7 +46,7 @@ export class InitializeGrass extends THREE.Group{
 			let posX = Math.random() * this.w - this.w/2;
 			let posY = this.h;
 			let posZ = Math.random() * this.d - this.d/2;
-			let angle = Math.random()*45;
+			let angle = Math.random()*360;
 
 			this.terrainPositions.push(posX, posY, posZ);
 			this.angles.push(angle);
@@ -68,8 +67,8 @@ export class InitializeGrass extends THREE.Group{
 		this.grassParticles = new THREE.Mesh(this.geo, grassMaterial);
         this.grassParticles.frustumCulled = false;
         this.add(this.grassParticles);
-
 	}
+
 	update(t){
 		this.grassParticles.material.uniforms.time.value = t;
 	}

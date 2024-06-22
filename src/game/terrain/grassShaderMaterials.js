@@ -26,7 +26,7 @@ export class GrassShaderMaterials{
 			side:THREE.DoubleSide,
 			// depthTest : false,
 			// depthWrite : false,
-			// transparent: true,
+			// transparent: true, 
 			// vertexColors: true
 		} );
 		return basicShaderMaterial;
