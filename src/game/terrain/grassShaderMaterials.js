@@ -2,8 +2,8 @@
 
 export class GrassShaderMaterials{
 	constructor(){
-		this.grassMaskTexture = new THREE.TextureLoader().load( '/textures/grass.jpg' );
-		this.grassDiffTexture = new THREE.TextureLoader().load( '/textures/grass_diffuse.jpg' );
+		this.grassMaskTexture = new THREE.TextureLoader().load( './textures/grass.jpg' );
+		this.grassDiffTexture = new THREE.TextureLoader().load( './textures/grass_diffuse.jpg' );
 	}
 
 	shaderMaterial( shaders ){
