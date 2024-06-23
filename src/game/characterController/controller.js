@@ -26,7 +26,9 @@ class BasicButtonPressedController {
 			right: false,
 			space: false,
 			shift: false,
-			action: false
+			action: false,
+			thirdPersonCamera: false,
+			freeCamera: false,
 		};
 		document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
 		document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -62,6 +64,12 @@ class BasicButtonPressedController {
 			case 16: // SHIFT
 				this._keys.shift = true;
 				break;
+			case 84: // t
+				this._keys.thirdPersonCamera = true;
+				break;
+			case 70: // f
+				this._keys.freeCamera = true;
+				break;
 		}
 	}
 
@@ -95,6 +103,12 @@ class BasicButtonPressedController {
 			case 16: // SHIFT
 				this._keys.shift = false;
 				break;
+			case 84: // t
+				this._keys.thirdPersonCamera = false;
+				break;
+			case 70: // f
+				this._keys.freeCamera = false;
+				break;
 		}
 	}
 };
@@ -112,6 +126,7 @@ export class BasicCharacterController {
 		this._position = new THREE.Vector3();
 
 		this._animations = {};
+		this.thirdCameraViewEnabled = params.thirdPersonCameraEnabled;
 		this._input = new BasicButtonPressedController();
 		this._stateMachine = new CharacterFSM(new BasicCharacterControllerProxy(this._animations));
 
@@ -164,7 +179,18 @@ export class BasicCharacterController {
 		if (!this._target) {
 			return;
 		}
-
+		if (this._input._keys.thirdPersonCamera) {
+			if(!this._params.cameraState.thirdPersonCameraEnabled){
+				this._params.enableThirdCameraView();
+				return;
+			}
+		}
+		if (this._input._keys.freeCamera) {
+			if(this._params.cameraState.thirdPersonCameraEnabled){
+				this._params.disableThirdCameraView();
+				return;
+			}
+		}
 		this._stateMachine.update(timeInSeconds, this._input);
 
 		const velocity = this._velocity;

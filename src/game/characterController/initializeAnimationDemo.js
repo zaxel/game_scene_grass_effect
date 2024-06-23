@@ -9,8 +9,12 @@ import { ThirdPersonViewCamera } from '../camera/thirdPersonCamera';
 
 export class InitializeAnimationDemo {
 	constructor(grassField) {
+		this._cameraState = {
+			thirdPersonCameraEnabled: false,
+			freeCameraInstance: null,
+			thirdPersonCameraInstance: null,
+		}
 		this._previousFrame = null;
-		this.thirdPersonCamera = false;
 		this._animate();
 		this.grassField = grassField;
 		this._initialize();
@@ -35,9 +39,7 @@ export class InitializeAnimationDemo {
 		const texture = loader.load(skyboxesList.sh);
 		texture.encoding = THREE.sRGBEncoding;
 		this._scene.background = texture;
-		if(!this.thirdPersonCamera){
-			new FreeCamera(this._camera, this._renderer.domElement)._freeCamera;
-		}
+		this._initFreeCamera();
 
 		const dirLight = new DirectionalLight()._dirLight;
 		const amLight = new THREE.AmbientLight(0xFFFFFF, .25);
@@ -53,19 +55,31 @@ export class InitializeAnimationDemo {
 			this._scene.add(this.grassField );
 		}
 	}
+	_initFreeCamera(){
+		this._cameraState.freeCameraInstance = new FreeCamera(this._camera, this._renderer.domElement);
+	}
+	_disableThirdCameraView(){
+		this._initFreeCamera();
+		this._cameraState.thirdPersonCameraEnabled = false;
+	}
+	_enableThirdCameraView(){
+		this._cameraState.freeCameraInstance._freeCamera.dispose();
+		this._cameraState.thirdPersonCameraEnabled = true;
+	}
 	_loadAnimatedModel() {
 		const params = {
 			camera: this._camera,
 			scene: this._scene,
+			cameraState: this._cameraState,
+			disableThirdCameraView: this._disableThirdCameraView.bind(this),
+			enableThirdCameraView: this._enableThirdCameraView.bind(this),
 		}
 		this._controls = new BasicCharacterController(params);
-
-		this._thirdPersonViewCamera = new ThirdPersonViewCamera({
+		this._cameraState.thirdPersonCameraInstance = new ThirdPersonViewCamera({
 			camera: this._camera,
 			target: this._controls,
 		})
 	}
-
 	_animate() {
 		requestAnimationFrame((t) => {
 			if (this._previousFrame === null) {
@@ -80,16 +94,13 @@ export class InitializeAnimationDemo {
 			this._animate();
 		});
 	}
-
 	_step(timeElapsed) {
 		const timeElapsedS = timeElapsed * 0.001;
-
 		if (this._controls) {
 			this._controls._update(timeElapsedS);
 		}
-		if(this.thirdPersonCamera){
-			this._thirdPersonViewCamera._update(timeElapsedS);
+		if(this._cameraState.thirdPersonCameraEnabled){
+			this._cameraState.thirdPersonCameraInstance._update(timeElapsedS);
 		}
 	}
-
 }
